@@ -169,7 +169,7 @@ function NTCTable(dataSourceArray, tableHeadersArray) {
     this.rows = [];
 
     this.noDataMessage = 'Gösterilebilecek veri yok';
-    
+
     this.withIndicatorArea = true;
 }
 
@@ -202,7 +202,7 @@ NTCTable.prototype.generateTableHeaderHtmlCode = function () {
     if (this.tableHeaders && this.tableHeaders.length > 0) {
         var finalHtmlCode = '';
         finalHtmlCode += '<tr class="ntc-tableRow-tableHeading">';
-        
+
         for (var i in this.tableHeaders) {
             finalHtmlCode += this.generateTableHeaderCellHtmlCodeAtIndex(i);
         }
@@ -222,11 +222,11 @@ NTCTable.prototype.generateTableHeaderHtmlCode = function () {
  */
 NTCTable.prototype.generateTableHeaderCellHtmlCodeAtIndex = function (index) {
     var outputHtml = '';
-    
+
     var text = this.tableHeaders[index] || '';
-        
+
     outputHtml += '<th>' + text + '</th>';
-    
+
     return outputHtml;
 }
 
@@ -343,8 +343,8 @@ NTCTable.prototype.reloadHtmlCode = function (additionalFilterObject) {
 
     var idSelector = selector(this.elementId, 'id');
 
-    if(this.filterController){
-        this.filter(filterParameter);   
+    if (this.filterController) {
+        this.filter(filterParameter);
     }
 
     $(idSelector).html(this.generateInnerHtmlCode());
@@ -368,13 +368,13 @@ NTCTable.prototype.setRows = function () {
                 };
 
                 var newRow = this.cellsForRowAtIndex(indexPath);
-                
+
                 currentRowData.rowKey = newRow.rowKey;
-                
+
                 if (!this.rows[indexPath.sectionIndex]) {
                     this.rows[indexPath.sectionIndex] = [];
                 }
-                
+
                 this.rows[indexPath.sectionIndex].push(newRow);
             }
         }
@@ -408,7 +408,7 @@ NTCTable.prototype.whenClick = function () {
     var indexKey = {};
     $('body').on('click', selector(this.elementId, 'id') + ' tr', function (e) {
         var selectedText = getSelection().toString();
-        if(!selectedText){
+        if (!selectedText) {
             var jqTableGroup = $(selector(self.elementId, 'id'));
             var jqParentTable = $(this).parents('table');
 
@@ -422,7 +422,7 @@ NTCTable.prototype.whenClick = function () {
             indexKey.sectionKey = jqParentTable.attr('data-section-key');
 
             self.didClickRowAtIndexPath(indexPath);
-            self.didClickRowAtIndexKey(indexKey);   
+            self.didClickRowAtIndexKey(indexKey);
         }
     });
 }
@@ -496,13 +496,13 @@ NTCTable.prototype.filter = function (additionalFilterObject) {
                 if (!holes[this.filterController.subFilters[k].key]) {
                     holes[this.filterController.subFilters[k].key] = {}
                 }
-                
-                switch(floorInput.type){
+
+                switch (floorInput.type) {
                     case 'date':
                         holes[this.filterController.subFilters[k].key].floor = floorInput.value ? new Date(floorInput.value) : null;
                         holes[this.filterController.subFilters[k].key].ceil = ceilInput.value ? new Date(ceilInput.value) : null;
                         break;
-                        
+
                     default:
                         holes[this.filterController.subFilters[k].key].floor = parseInt(floorInput.value);
                         holes[this.filterController.subFilters[k].key].ceil = parseInt(ceilInput.value);
@@ -570,10 +570,10 @@ NTCTable.prototype.filter = function (additionalFilterObject) {
 
                     if (currentDataHoleValues) {
                         if (typeof currentDataHoleValues == 'object') {
-                            if(Array.isArray(currentDataHoleValues)){
+                            if (Array.isArray(currentDataHoleValues)) {
                                 allKeys = currentDataHoleValues;
-                            }else{
-                                allKeys = Object.keys(currentDataHoleValues);   
+                            } else {
+                                allKeys = Object.keys(currentDataHoleValues);
                             }
                         } else if (typeof currentDataHoleValues == 'string') {
                             allKeys.push(currentDataHoleValues);
@@ -588,21 +588,21 @@ NTCTable.prototype.filter = function (additionalFilterObject) {
 
                             if (Object.keys(currentHole).indexOf('ceil') >= 0 || Object.keys(currentHole).indexOf('floor') >= 0) {
                                 var isInRange;
-                                
-                                if(currentHole.floor || currentHole.ceil){
-                                    if(currentDataHoleValues == null || currentDataHoleValues == undefined){
+
+                                if (currentHole.floor || currentHole.ceil) {
+                                    if (currentDataHoleValues == null || currentDataHoleValues == undefined) {
                                         isInRange = false;
-                                    }else{
+                                    } else {
                                         var currentDataHoleValuesAsInt;
 
                                         var comparisonTypeDefiner;
-                                        if(currentHole.floor){
+                                        if (currentHole.floor) {
                                             comparisonTypeDefiner = currentHole.floor;
-                                        }else{
+                                        } else {
                                             comparisonTypeDefiner = currentHole.ceil;
                                         }
-                                        
-                                        switch(comparisonTypeDefiner.constructor){
+
+                                        switch (comparisonTypeDefiner.constructor) {
                                             case Date:
                                                 currentDataHoleValuesAsInt = new Date(currentDataHoleValues);
                                                 break;
@@ -626,10 +626,10 @@ NTCTable.prototype.filter = function (additionalFilterObject) {
                                             }
                                         }
                                     }
-                                }else{
+                                } else {
                                     isInRange = true;
                                 }
-                                
+
                                 if (keyIndex > 0 ? (isInRange && currentData.isVisible) : (isInRange)) {
                                     isVisibleForCurrentHole = true;
                                     break;
@@ -723,9 +723,9 @@ function NTCRow(NTCCellObjectArray, rowKey) {
  * @param {String} cellData [REQUIRED]
  * @return {void}
  */
-NTCRow.prototype.addNewCell = function (cellData) {	
-	var newCell = new NTCCell(cellData);
-	this.cellsArray.push(newCell);
+NTCRow.prototype.addNewCell = function (cellData) {
+    var newCell = new NTCCell(cellData);
+    this.cellsArray.push(newCell);
 }
 
 /**N
@@ -736,6 +736,7 @@ NTCRow.prototype.addNewCell = function (cellData) {
 NTCRow.prototype.generateHtmlCode = function () {
     var htmlCode;
     var innerHtmlCode = '';
+
 
     if (this.cellsArray && this.cellsArray.length > 0) {
         var self = this;

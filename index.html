@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NTC Sample</title>
+    <meta name="description" content="Sample javascript project Ntc" />
+    <meta name="author" content="ferdiozer.com" />
+
+    <!--[JS] import jquery-3.3.1-->
+    <script src="assets/jquery-3.3.1.min.js"></script>
+    <!--[JS] import NTCTable-->
+    <script src="assets/NTCTable.js"></script>
+
+    <!--[CSS] import NTCTable-->
+    <link rel="stylesheet" media="screen" href="assets/NTCUIKit.css">
+
+    <style>
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: rgb(34, 34, 34);
+            color: white;
+            margin-top: 50px;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        #root {
+            padding: 0 50px;
+        }
+
+        footer>p>a:hover {
+            color: red;
+        }
+
+        #total-price-area {
+            font-size: 36px;
+            margin-top: 10px;
+            font-family: system-ui;
+        }
+
+        .p-5 {
+            padding: 50px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <h1>NTC Framework</h1>
+    <div id="root">
+    </div>
+
+
+    <footer>
+        <p>
+            <a title="Author" target="_blank" href="https://www.ferdiozer.com/">© 2021 ferdiozer.com</a>
+        </p>
+    </footer>
+
+    <script>
+        console.log("[TEST]:randomString:5:", randomString(5))
+    </script>
+
+    <script>
+        let dataList = [
+            {
+                "productid": "LT-1449506",
+                "productName": "Super Outfit",
+                "productPrice": 300.45,
+                "qnty": 10
+            },
+            {
+                "productid": "LT-4523632",
+                "productName": "Rocket-Powered Roller Skates",
+                "productPrice": 11367.99,
+                "qnty": 4
+            },
+            {
+                "productid": "TM-2026045",
+                "productName": "Giant Kite Kit",
+                "productPrice": 1099.90,
+                "qnty": 12
+            },
+            {
+                "productid": "LT-1990790",
+                "productName": "Bird Seed",
+                "productPrice": 5.90,
+                "qnty": 55
+            },
+            {
+                "productid": "TLTS-8002604",
+                "productName": "Artificial Rock",
+                "productPrice": 123.99,
+                "qnty": 24
+            },
+            {
+                "productid": "TM-6792415",
+                "productName": "Giant Rubber Band V1",
+                "productPrice": 44.90,
+                "qnty": 5000
+            },
+            {
+                "productid": "LT-8163469",
+                "productName": "Jet Motor",
+                "productPrice": 99999.99,
+                "qnty": 2
+            }
+        ];
+
+        function formatedForPrice(value) {
+            if (typeof value != "number") return 0.00
+            return new Intl.NumberFormat('tr-TR', {
+                currency: 'TRY',
+                minimumFractionDigits: 2
+            }).format(value)
+
+        }
+
+        let totalPrice = 0;
+        dataList = dataList.map((v, i) => {
+            totalPrice = totalPrice + v.qnty * v.productPrice
+            return {
+                ...v,
+                price: formatedForPrice(v.qnty * v.productPrice)
+            }
+        })
+
+        const myHeader = [
+            "Ürün kodu",
+            "Ürün adı",
+            "Birim fiyat(TL)",
+            "Adet",
+            "Fiyat(TL)"
+        ];
+        const item = new NTCTable({
+            "": dataList
+        }, myHeader);
+
+        const renderHtml = item.generateInnerHtmlCode()
+        $("#root").html(renderHtml)
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+        //[STARTT] Total Price Operation
+
+        function numberToWords(number = 0) {
+            const steps = ['', 'bir', 'iki', 'üç', 'dört', 'beş', 'altı', 'yedi', 'sekiz', 'dokuz']
+            const tens = ['', 'on', 'yirmi', 'otuz', 'kırk', 'elli', 'altmış', 'yetmiş', 'seksen', 'doksan']
+            const hundreds = ['', 'yüz', 'ikiyüz', 'üçyüz', 'dörtyüz', 'beşyüz', 'altıyüz', 'yediyüz', 'sekizyüz', 'dokuzyüz']
+            const nS = ['', 'bin', 'milyon', 'milyar', 'trilyon', 'katrilyon', 'kentilyon', 'seksilyon', 'septilyon', 'oktilyon']
+            const max = 30
+
+            const completer = ['', '00', '0']
+            let index
+            let backer
+            let triples
+            let result = ''
+            const getUntilThousands = triple => `${hundreds[triple[0]]} ${tens[triple[1]]} ${steps[triple[2]]}`
+
+            const errorHandlers = () => {
+                if (number.toString().length > max) {
+                    throw new RangeError`Girilen hesaplanamayacak kadar çok büyük. Sayı en fazla ${max} basamak olmalıdır`
+                }
+                if (typeof number != 'string') {
+                    throw new TypeError('Parametre string olmalıdır')
+                }
+                for (let index = 0; index < number.length; ++index) {
+                    // console.log(number[index])
+                    if (number[index] < '0' || number[index] > '9') {
+                        throw new Error('Sayı sadece rakamlardan oluşmalıdır')
+                    }
+                }
+            }
+            errorHandlers()
+            number = completer[number.length % 3] + number
+            for (index = number.length, backer = 0; index > 0; index -= 3, ++backer) {
+                triples = getUntilThousands(number.substr(index - 3, 3))
+
+                if (triples !== '') {
+                    result = `${triples} ${nS[backer]} ${result}`
+                }
+            }
+            if (result.substr(0, 7) === 'bir bin') {
+                return result.substr(4)
+            } else if (result === '') {
+                return 'sıfır'
+            } else {
+                return result
+            }
+        }
+
+        function numberToWordsLayer(tNumber) {
+            let tNumberStr = tNumber.toString()
+            let pSpeechText1 = "";
+            let pSpeechText2 = "";
+            let pSpeechTextFinal = "";
+            if (tNumberStr.indexOf(".") > 0) { // nokta varsa (kuruş)
+                pSpeechText1 = tNumberStr.substring(0, tNumberStr.indexOf(".")); // tam kısım
+                pSpeechText2 = tNumberStr.substring(tNumberStr.indexOf(".") + 1, tNumberStr.length); // ondalıklı kısım
+                pSpeechText2 = pSpeechText2.length == 1 ? `${pSpeechText2}0` : pSpeechText2
+                pSpeechTextFinal = "kuruş"
+                return `${numberToWords(pSpeechText1)} lira ${pSpeechText2.length != 0 ? numberToWords(pSpeechText2) : ""} ${pSpeechTextFinal}`
+            }
+            else { // ondalık yok
+                pSpeechTextFinal = "lira"
+                return `${numberToWords(tNumberStr)} lira`
+            }
+        }
+
+        let priceSpeechText = numberToWordsLayer(totalPrice)
+
+        const renderTotalPrice = `
+        <div class="p-5">
+        <h3>
+            Toplam
+        </h3>
+        <span id="total-price-area">
+            ${formatedForPrice(totalPrice)} TL
+        </span>
+        <br />
+        <b>
+            Yalnız
+        </b>
+        <span id="total-price-area-text">
+           ${priceSpeechText}
+        </span>
+    </div>`
+
+        $("#root").after(renderTotalPrice)
+
+        /////////////////////////////////////////////////////////////////////////////////////////
+        //[END] Total Price Operation
+
+    </script>
+
+</body>
+
+</html>
